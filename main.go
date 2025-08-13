@@ -1,58 +1,38 @@
 package main
 
 import (
-	c_errors "class_proj_secb/customErrors"
-	user "class_proj_secb/userModule"
-	"errors"
+	"class_proj_secb/todo"
 	"log"
-	"strconv"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 func main() {
-	println("Hello, World!")
-	_, err := divideWithError(10,0)
+	g := gin.Default()
+	g.GET("/", HandleInitialRoute)
+	g.GET("/todos", todo.HandleGetAllTodos)
+	g.POST("/todo", todo.HandleAddTodo)
+	g.DELETE("/todo/:id", todo.HandleDeleteTodo)
+
+	// checking database connection
+	dsn := "host=localhost user=secb password=secb dbname=secbgodb port=5434 sslmode=disable"
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil{
-		println(err.Error())
+		log.Println("failed to connect database")
+		return;
 	}
-	divideResult, _ := divideWithError(30,19)
-	println(*divideResult)
-	// importing user
-	user := user.NewUser( "John", 20, "New York", true)
-	log.Println("User : ", user)
-	cName := user.CapitalizeUserName()
-	println("CApitalized User Name : ", cName)
-	// parse String
-	_, err = parseString("abcd")
-	println("error: ", err.Error())
-	_, err = parseString("2000")
-	println("error: ", err.Error())
-	result, _ := parseString("100")
-	println("result: ", *result)
+	log.Println(db)
+	log.Println("database connected :5434")
+	// running and listening on port
+	// default port :8080
+	g.Run(":8010")
 }
 
-func parseString(value string) (*int, error){
-	res, err := strconv.Atoi(value)
-	if err != nil{
-		return nil, c_errors.CustomError{
-			Message: "Cannot parse string to int",
-			Type: "strconv Atoi",
-			Err: err,
-		}
-	}
-	if res < 1 || res > 1000{
-		return nil, c_errors.CustomError{
-			Message: "Value must be between 1 and 1000",
-			Type: "range (1-1000)",
-			Err: err,
-		}
-	}
-	return &res, nil
-}
-
-func divideWithError(a, b float64) (*float64, error){
-	if b == 0{
-		return nil, errors.New("cannot divisible by zero")
-	}
-	res := a/b
-	return &res, nil
+func HandleInitialRoute(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Welocome to the golang api",
+	})
 }

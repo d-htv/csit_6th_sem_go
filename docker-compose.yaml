@@ -1,0 +1,15 @@
+version: "1.0"
+services:
+  secb-go-db-services:
+    container_name: 'secb-go-db-container'
+    image: 'postgres:alpine'
+    ports:
+      - 5434:5432
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+
+  
