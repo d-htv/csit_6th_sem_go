@@ -1,6 +1,8 @@
 package main
 
 import (
+	"class_proj_secb/common"
+	"class_proj_secb/models"
 	"class_proj_secb/todo"
 	"log"
 	"net/http"
@@ -24,7 +26,15 @@ func main() {
 		log.Println("failed to connect database")
 		return;
 	}
+	// migrating user table
+	db.AutoMigrate(models.User{})
 	log.Println(db)
+	if db != nil{
+		common.MyApiServer.DB = *db
+	}else{
+		log.Fatal("Database not connected")
+		return
+	}
 	log.Println("database connected :5434")
 	// running and listening on port
 	// default port :8080
