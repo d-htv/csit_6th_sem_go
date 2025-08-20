@@ -2,6 +2,8 @@ package main
 
 import (
 	"class_proj_secb/common"
+	"class_proj_secb/database/myquery"
+	"class_proj_secb/handlers"
 	"class_proj_secb/models"
 	"class_proj_secb/todo"
 	"log"
@@ -19,6 +21,10 @@ func main() {
 	g.POST("/todo", todo.HandleAddTodo)
 	g.DELETE("/todo/:id", todo.HandleDeleteTodo)
 
+	// user route
+	g.GET("/users", handlers.HandleGetAllUsers)
+	g.POST("/create-user",handlers.HandleCreateUser)
+
 	// checking database connection
 	dsn := "host=localhost user=secb password=secb dbname=secbgodb port=5434 sslmode=disable"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
@@ -26,6 +32,8 @@ func main() {
 		log.Println("failed to connect database")
 		return;
 	}
+	// using db in myquery
+	myquery.Use(db)
 	// migrating user table
 	db.AutoMigrate(models.User{})
 	log.Println(db)
