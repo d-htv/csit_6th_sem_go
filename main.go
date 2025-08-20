@@ -24,6 +24,9 @@ func main() {
 	// user route
 	g.GET("/users", handlers.HandleGetAllUsers)
 	g.POST("/create-user",handlers.HandleCreateUser)
+	g.GET("/user/:id", handlers.HandleGetUserById)
+	g.DELETE("/user/:id", handlers.HandleDeleteUser)
+	g.PUT("/update-user/:id", handlers.HandleUpdateUser)
 
 	// checking database connection
 	dsn := "host=localhost user=secb password=secb dbname=secbgodb port=5434 sslmode=disable"
@@ -33,7 +36,7 @@ func main() {
 		return;
 	}
 	// using db in myquery
-	myquery.Use(db)
+	myquery.SetDefault(db)
 	// migrating user table
 	db.AutoMigrate(models.User{})
 	log.Println(db)

@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"class_proj_secb/common"
 	"class_proj_secb/database/myquery"
 	"class_proj_secb/models"
 	"context"
@@ -9,8 +8,6 @@ import (
 
 func GetAllUsers(ctx context.Context) ([]*models.User, error){
 	userQuery := myquery.User
-	db := &common.MyApiServer.DB
-	userQuery.UseDB(db)
 	allUsers, err := userQuery.WithContext(ctx).Find()
 	if err != nil{
 		return nil, err
@@ -19,7 +16,6 @@ func GetAllUsers(ctx context.Context) ([]*models.User, error){
 }
 func GetUserById(ctx context.Context, id uint64)(*models.User, error){
 	userQuery := myquery.User
-	userQuery.UseDB(&common.MyApiServer.DB)
 	user,err := userQuery.WithContext(ctx).Where(userQuery.ID.Eq(id)).First()
 	if err != nil{
 		return nil, err
@@ -32,7 +28,6 @@ func CreateUser(ctx context.Context, userDto models.UserDto) (*models.User, erro
 		UserDto: userDto,
 	}
 	userQuery := myquery.User
-	userQuery.UseDB(&common.MyApiServer.DB)
 	err := userQuery.WithContext(ctx).Create(user)
 	if err != nil{
 		return nil, err
@@ -46,7 +41,6 @@ func UpdateUser(ctx context.Context, userDto models.UserDto, id uint64) (*models
 		UserDto: userDto,
 	}
 	userQuery := myquery.User
-	userQuery.UseDB(&common.MyApiServer.DB)
 	_, err := userQuery.WithContext(ctx).Where(myquery.User.ID.Eq(id)).Updates(user)
 	if err != nil{
 		return nil, err
@@ -59,7 +53,6 @@ func DeleteUser(ctx context.Context, id uint64) error{
 	// _, err := myquery.User.WithContext(ctx).Where(myquery.User.ID.Eq(id)).Unscoped().Delete()
 	// fake delete only updated the deleted_at in table
 	userQuery := myquery.User
-	userQuery.UseDB(&common.MyApiServer.DB)
 	_, err := userQuery.WithContext(ctx).Where(myquery.User.ID.Eq(id)).Delete()
 	if err != nil{
 		return err
@@ -69,7 +62,6 @@ func DeleteUser(ctx context.Context, id uint64) error{
 // getting all data with fake deleted data
 func GetAllUnscopedUsers(ctx context.Context) ([]*models.User, error){
 	userQuery := myquery.User
-	userQuery.UseDB(&common.MyApiServer.DB)
 	allUsers, err := userQuery.WithContext(ctx).Unscoped().Find()
 	if err != nil{
 		return nil, err
