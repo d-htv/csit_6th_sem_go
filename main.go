@@ -14,9 +14,22 @@ import (
 	"gorm.io/gorm"
 )
 
+func MyMiddleware() gin.HandlerFunc{
+	return func (ctx *gin.Context){
+		log.Println("middleware called")
+		ctx.Next()
+		// ctx.JSON(http.StatusUnprocessableEntity, gin.H{
+		// 	"error": "middleware error",
+		// })
+		// return;
+		log.Println("middleware finished")
+	}	
+}
+
 func main() {
 	g := gin.Default()
 	g.GET("/", HandleInitialRoute)
+	g.Use(MyMiddleware())
 	g.GET("/todos", todo.HandleGetAllTodos)
 	g.POST("/todo", todo.HandleAddTodo)
 	g.DELETE("/todo/:id", todo.HandleDeleteTodo)
